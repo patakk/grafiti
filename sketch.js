@@ -1,6 +1,6 @@
 var particles_info = {
     count: 4000000,
-    speed: .1,
+    speed: .4,
     input: "hello",
     colors: true,
   };
@@ -612,11 +612,11 @@ function render(gl, state, timestamp_millis) {
   // }
   realFrameCount++;
   //gl.drawArrays(gl.POINTS, 0, num_part);
-  if(realFrameCount < 1344){
+  if(realFrameCount < 144){
     window.requestAnimationFrame(function(ts) { render(gl, state, ts); });
     if((realFrameCount+1)%1 == 0){
       console.log("hello")
-      gl.drawArrays(gl.POINTS, 0, num_part);
+      //gl.drawArrays(gl.POINTS, 0, num_part);
     }
   }
   else{
