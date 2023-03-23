@@ -1,6 +1,6 @@
 var particles_info = {
-    count: 4000000,
-    speed: .4,
+    count: 4100000,
+    speed: .0,
     input: "hello",
     colors: true,
   };
@@ -18,14 +18,17 @@ var input_image;
 var gr;
 var input_image_tex;
 
-var resx = 3300;
-var resy = 4300;
+var resx = 3000;
+var resy = Math.floor(resx/Math.sqrt(2));
 var colors_current = 1.0*particles_info.colors;
 var colors_target = colors_current;
 
 var time0 = 0;
 var time1 = 0;
 
+let counter = 0;
+let maxcounts = 5;
+let maxframes = 1111145;
 
 var palettes = [
   'b3001b-255c99-ccad8f',
@@ -108,20 +111,24 @@ let textGen = function(p) {
 
 
     p.rectMode(p.CENTER);
-    for(var k = 0; k < 155; k++){
-      col = pal[Math.floor(fxrand()*pal.length)];
+    for(var k = 0; k < 12255; k++){
+      col = pal[Math.floor(Math.pow(fxrand(), 3)*pal.length)];
       p.fill(255);
       p.fill(col[0]*255,col[1]*255,col[2]*255);
       p.push();
       p.translate(p.random(0, p.width), p.random(0, p.height));
       //p.rotateX(p.random(100));
       //p.rotateY(p.random(100));
-       p.rotate(p.random(-1.9,1.9)*0+p.radians(33 + 90*k));
-      // p.rect(0, 0, p.random(122, 133), p.random(5, 44));
+      p.rotate(p.random(-1.9,1.9)*1+p.radians(33 + 90*k));
+      //p.rect(0, 0, p.random(122, 333), p.random(5, 89));
       // p.ellipse(0, 0, 6, 233);
       let ro = fxrand();
-      p.ellipse(0, 0, 10+100*ro, 10+100*ro);
-      p.fill(ro*255,ro*255,ro*255);
+      //  p.ellipse(0, 0, 10+100*ro, 10+100*ro);
+      p.ellipse(0, 0, 4, 4);
+
+      // if(k < 100)
+      //   p.ellipse(0, 0, 200, 200);
+      p.fill(fxrand()*255,fxrand()*255,fxrand()*255);
       p.translate(p.random(-20, 20), p.random(-20,20))
       // p.rect(0, 0, 22, 22);
       p.pop();
@@ -140,6 +147,8 @@ let textGen = function(p) {
 };
 
 let myp5 = new p5(textGen);
+
+let thestate;
 
 function isMobile() {
   let check = false;
@@ -167,7 +176,7 @@ var getSourceSynch = function(url) {
     req.open("GET", url, false);
     req.send(null);
     return (req.status == 200) ? req.responseText : null;
-  }; 
+}; 
 
 function createShader(gl, shader_info) {
     var shader = gl.createShader(shader_info.type);
@@ -523,8 +532,8 @@ function render(gl, state, timestamp_millis) {
                     Math.floor(state.born_particles + state.birth_rate * time_delta));
   }
   state.old_timestamp = timestamp_millis;
-  if(realFrameCount == 0 || true){
-    gl.clearColor(.8, .8, .8, 1.0);
+  if(realFrameCount == 0 && counter == 0 || true){
+    gl.clearColor(.7, .696, .693, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   }
   gl.useProgram(state.particle_update_program);
@@ -560,6 +569,7 @@ function render(gl, state, timestamp_millis) {
   gl.enable(gl.RASTERIZER_DISCARD);
   gl.beginTransformFeedback(gl.POINTS);
   gl.drawArrays(gl.POINTS, 0, num_part);
+
   gl.endTransformFeedback();
   gl.disable(gl.RASTERIZER_DISCARD);
   gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, 0, null);
@@ -593,9 +603,9 @@ function render(gl, state, timestamp_millis) {
   gl.uniform3f(
     gl.getUniformLocation(state.particle_render_program, "u_Tint1"),
     0,0,0);
-  gl.uniform3f(
-    gl.getUniformLocation(state.particle_render_program, "u_Tint2"),
-    0,0,0);
+    gl.uniform3f(
+      gl.getUniformLocation(state.particle_render_program, "u_Tint2"),
+      0,0,0);
 
   var tmp = state.read;
   state.read = state.write;
@@ -612,16 +622,22 @@ function render(gl, state, timestamp_millis) {
   // }
   realFrameCount++;
   //gl.drawArrays(gl.POINTS, 0, num_part);
-  if(realFrameCount < 144){
+  if(realFrameCount < maxframes){
     window.requestAnimationFrame(function(ts) { render(gl, state, ts); });
     if((realFrameCount+1)%1 == 0){
       console.log("hello")
-      //gl.drawArrays(gl.POINTS, 0, num_part);
+      gl.drawArrays(gl.POINTS, 0, num_part);
     }
   }
   else{
     console.log("hello render")
     gl.drawArrays(gl.POINTS, 0, num_part);
+
+    if(counter < maxcounts-1){
+      counter++;
+      // state = resetState();
+      // window.requestAnimationFrame(function(ts) { render(gl, state, ts); });
+    }
   }
 
 
@@ -648,6 +664,52 @@ document.addEventListener('keydown', (event) => {
   if(keyName == 's'){
     save();
   }
+  // number keys
+  if(keyName == 'q'){
+    speed_prev /= 1.2;
+  }
+  if(keyName == 'e'){
+    speed_prev *= 1.2;
+  }
+  // number keys
+  if(keyName == '1'){
+    speed_prev = .01;
+  }
+  if(keyName == '2'){
+    speed_prev = .02;
+  }
+  if(keyName == '3'){
+    speed_prev = .03;
+  }
+  if(keyName == '4'){
+    speed_prev = .04;
+  }
+  if(keyName == '5'){
+    speed_prev = .05;
+  }
+  if(keyName == '6'){
+    speed_prev = .06;
+  }
+  if(keyName == '7'){
+    speed_prev = .07;
+  }
+  if(keyName == '8'){
+    speed_prev = .08;
+  }
+  if(keyName == '9'){
+    speed_prev = .09;
+  }
+  if(keyName == '0'){
+    speed_prev = .0;
+  }
+});
+
+document.addEventListener('click', function(event) {
+  // This function will be called when the element is clicked
+  // console.log("click")
+  // thestate = resetState();
+  // thestate.shouldClear = false;
+  // window.requestAnimationFrame(function(ts) { render(webgl_context, thestate, ts); });
 });
 
 function repositionCanvas(canvas){
@@ -701,7 +763,7 @@ function resetState(){
     var y = e.pageY - canvas.offsetTop;
     x = x / parseInt(canvas.style.width) * resx;
     y = y / parseInt(canvas.style.height) * resy;
-    if(!isMobile()) state.origin = [x, y];
+    if(!isMobile()) thestate.origin = [x, y];
     
   };
   
@@ -710,21 +772,24 @@ function resetState(){
     var touch = evt.touches[0] || evt.changedTouches[0];
     var x = touch.pageX - this.offsetLeft;
     var y = touch.pageY - this.offsetTop;
-    state.origin = [x, y];
+    thestate.origin = [x, y];
   };
   
   canvas.ontouchend = function(e) {
     if(isMobile()){
-      state.origin = [-1000, -1000];
+      thestate.origin = [-1000, -1000];
     }
   };
+  
+  realFrameCount = 0;
+  frameCount = 0;
 
-  var state =
+  thestate =
   init(
     webgl_context,
     count_prev,
   );
-  return state;
+  return thestate;
 }
 
 function preventBehavior(e) {
@@ -800,8 +865,8 @@ function main() {
         //input_image.src = './assets/fingerprint.png';
         
         input_image.onload = function (){
-          var state = resetState();
-          window.requestAnimationFrame(function(ts) { render(webgl_context, state, ts); });
+            thestate = resetState();
+            window.requestAnimationFrame(function(ts) { render(webgl_context, thestate, ts); });
         }
     }
     else {
@@ -813,7 +878,33 @@ window.onload = function(e){
   main();
 }
 
+function handleZoom(event){
+  let clientWidth = window.innerWidth;
+  let clientHeight = window.innerHeight;
+  let sw = resx;
+  let sh = resy;
+  let mx = (event.clientX-clientWidth/2) / clientWidth * sw;
+  let my = (event.clientY-clientHeight/2) / clientHeight * sh;
+  canvas.style.width = sw + 'px';
+  canvas.style.height = sh + 'px';
+  canvas.style.position = 'absolute';
+  canvas.style.left = clientWidth/2 - sw/2 - mx + 'px';
+  canvas.style.top = clientHeight/2 - sh/2 - my + 'px';
+}
 
+let mousepressed = false;
+document.addEventListener('mousedown', function(event) {
+    handleZoom(event);
+    mousepressed = true;
+});
+document.addEventListener("mousemove", function(event) {
+    if(mousepressed)
+        handleZoom(event);
+});
+document.addEventListener('mouseup', function(event) {
+    reportWindowSize();
+    mousepressed = false;
+});
 
 
 

@@ -35,7 +35,7 @@ void main() {
 
   gl_PointSize = 4. - 3.*v_Age/344.;
   gl_PointSize = (2. + 4.*i_Seed.y) + 4.*smoothstep(.9985, .9999999, i_Seed.x);
-  gl_PointSize *= 1.1;
+  gl_PointSize *= 1.02;
   v_Color = v_Color * (1. - .6*smoothstep(.9985, .9999999, i_Seed.x));
   // if(i_Age < 10.){
   //   gl_PointSize = 250.;
