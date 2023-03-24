@@ -104,6 +104,9 @@ float power(float p, float g) {
         return 1. - 0.5 * pow(2.*(1. - p), g);
 }
 
+float lightness(vec3 col){
+	return col[0]*0.2126 + col[1]*0.7152 + col[2]*0.0722;
+}
 
 void main() {
 	
@@ -119,7 +122,7 @@ void main() {
 	ivec2 ipos = ivec2(int(pos.x), int(pos.y));
 	vec2 tc =  pos.xy/resolution.xy;
 	tc.y = 1. - tc.y;
-	float texcol = texture(u_InputImage, tc).r*1.;
+	float texcol = lightness(texture(u_InputImage, tc).rgb);
 	vec3 tex = texture(u_InputImage, tc).rgb;
 
 	float tttime = time*0.0015 + pos.x/resolution.x;
@@ -157,8 +160,8 @@ void main() {
    
 	// noisexy.x = 1.;
 	// noisexy.y = 0.;
-   noisexy.x += 10.*(-1. + 2.*random3(vec3(seed.x)).x);
-   noisexy.y += 10.*(-1. + 2.*random3(vec3(seed.y)).y);
+   noisexy.x += 6.3*(-1. + 2.*random3(vec3(seed.x)).x);
+   noisexy.y += 6.3*(-1. + 2.*random3(vec3(seed.y)).y);
 
 	vec2 fromMouse = pos - mouse;
 	float tomouselen = length(fromMouse);
@@ -208,7 +211,7 @@ void main() {
    vel = vel * drag;
 
    vec3 col = i_Color;
-   if(i_Age < 13.0 || length(vel*speed) < 1.5){
+   if(i_Age < 13.0 || length(vel*speed) < .5 || texcol > 1110.3){
    	col = tex.rgb;
    }
 //    if(i_Seed.y < .99)

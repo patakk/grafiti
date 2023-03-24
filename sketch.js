@@ -1,6 +1,6 @@
 var particles_info = {
     count: 4100000,
-    speed: .0,
+    speed: .05,
     input: "hello",
     colors: true,
   };
@@ -86,6 +86,9 @@ let textGen = function(p) {
   let x = 0;
   let y = 0;
 
+  let pw = 512/2;
+  let ph = 512*resy/resx/2;
+
   p.setup = function() {
     p.createCanvas(512, 512*resy/resx);
     p.reset("ABC");
@@ -109,14 +112,14 @@ let textGen = function(p) {
     p.rectMode(p.CENTER);
     p.textSize(44);
 
-
     p.rectMode(p.CENTER);
-    for(var k = 0; k < 12255; k++){
+    for(var k = 0; k < 11133; k++){
       col = pal[Math.floor(Math.pow(fxrand(), 3)*pal.length)];
       p.fill(255);
       p.fill(col[0]*255,col[1]*255,col[2]*255);
       p.push();
-      p.translate(p.random(0, p.width), p.random(0, p.height));
+      p.translate(pw/2, ph/2);
+      p.translate(.97*p.random(-pw/2, pw/2), .97*p.random(-ph/2, ph/2));
       //p.rotateX(p.random(100));
       //p.rotateY(p.random(100));
       p.rotate(p.random(-1.9,1.9)*1+p.radians(33 + 90*k));
@@ -712,6 +715,8 @@ document.addEventListener('click', function(event) {
   // window.requestAnimationFrame(function(ts) { render(webgl_context, thestate, ts); });
 });
 
+let bbrd = 200;
+
 function repositionCanvas(canvas){
     var win = window,
     doc = document,
@@ -738,11 +743,11 @@ function repositionCanvas(canvas){
     let sw = 100;
     let sh = 100;
     if(oom > com){
-      sh = hh;
+      sh = hh-bbrd;
       sw = sh*com;
     }
     else{
-      sw = ww;
+      sw = ww-bbrd;
       sh = sw/com;
     }
 
