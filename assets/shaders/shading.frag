@@ -311,5 +311,5 @@ void main() {
   res = v_Color.rgb;
 
   o_FragColor = vec4(vec3(ph), 1.);
-  o_FragColor = vec4(vec3(res+.3*power(ddot, 16.))*alpha, 1.*alpha);
+  o_FragColor = vec4(vec3(res+.2*power(ddot, 16.))*alpha, 1.*alpha);
 }

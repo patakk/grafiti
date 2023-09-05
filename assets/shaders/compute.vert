@@ -3,9 +3,15 @@ precision highp float;
 
 uniform float u_Time;
 uniform vec2 u_Gravity;
-uniform vec2 u_Origin;
+uniform vec2 u_Origin1;
+uniform vec2 u_Origin2;
+uniform vec2 u_Origin3;
+uniform vec2 u_Origin4;
+uniform vec2 u_Origin5;
 uniform sampler2D u_InputImage;
 uniform float u_Speed;
+uniform float u_Angle;
+uniform float u_RepelForce;
 
 uniform vec2 u_Resolution;
 
@@ -115,7 +121,13 @@ void main() {
    vec2 acc = vec2(0., 0.);
    vec2 seed = i_Seed;
    vec2 resolution = u_Resolution;
-   vec2 mouse = vec2(u_Origin.x, resolution.y-u_Origin.y);
+
+   vec2 mouse_1 = vec2(u_Origin1.x, resolution.y-u_Origin1.y);
+   vec2 mouse_2 = vec2(u_Origin2.x, resolution.y-u_Origin2.y);
+   vec2 mouse_3 = vec2(u_Origin3.x, resolution.y-u_Origin3.y);
+   vec2 mouse_4 = vec2(u_Origin4.x, resolution.y-u_Origin4.y);
+   vec2 mouse_5 = vec2(u_Origin5.x, resolution.y-u_Origin5.y);
+
    float speed = u_Speed;
    float time = u_Time;
 
@@ -155,53 +167,133 @@ void main() {
    //ang = 66.*simplex3d(nzp*.527*qq + time*0.02);
 
 
-   noisexy.x = r*cos(ang)*12.5 + 0.0*r*cos(ang2);
-   noisexy.y = r*sin(ang)*12.5 + 0.0*r*sin(ang2);
+   noisexy.x = r*cos(ang)*.00032 + 0.0*r*cos(ang2);
+   noisexy.y = r*sin(ang)*.00032 + 0.0*r*sin(ang2);
    
 	// noisexy.x = 1.;
 	// noisexy.y = 0.;
-   noisexy.x += 6.3*(-1. + 2.*random3(vec3(seed.x)).x);
-   noisexy.y += 6.3*(-1. + 2.*random3(vec3(seed.y)).y);
+   noisexy.x += 0.0*(-1. + 2.*random3(vec3(seed.x)).x);
+   noisexy.y += 0.0*(-1. + 2.*random3(vec3(seed.y)).y);
 
-	vec2 fromMouse = pos - mouse;
-	float tomouselen = length(fromMouse);
-	float maxmouse = resolution.x*0.1;
-	if(tomouselen < maxmouse){
-		fromMouse = fromMouse / tomouselen; // normalized
-		fromMouse = fromMouse * (1. - tomouselen/maxmouse); 
-		fromMouse *= 260. + 160.* simplex3d(vec3(pos.xy*0.04, time*0.01));
-		// fromMouse *= .15;
+	float maxmouse = resolution.x*0.0615*.33*u_RepelForce*3.;
+	
+	vec2 possn_1 = pos;
+	float angle = simplex3d(vec3(mouse_1.xy*0.0000+13.42, time*0.0018))*3.1415926535897932384626433832795*2.0;
+	angle = u_Angle;
+	possn_1 -= mouse_1;
+	possn_1 = vec2(possn_1.x*cos(angle) - possn_1.y*sin(angle), possn_1.x*sin(angle) + possn_1.y*cos(angle));
+	// possn_1.y *= 2.1;
+	// possn_1.x += 30.*simplex3d(vec3(pos.xy*0.01+313.42, time*0.01));
+	// possn_1.y += 30.*simplex3d(vec3(pos.xy*0.01, time*0.01));
+	possn_1 += mouse_1;
+	vec2 fromMouse_1 = pos - mouse_1;
+	vec2 fromMouse_11 = possn_1 - mouse_1;
+	float tomouselen_1 = length(fromMouse_1);
+	if(abs(fromMouse_11.x)*2. < maxmouse && abs(fromMouse_11.y)*2. < maxmouse){
+		fromMouse_1 = fromMouse_1 / tomouselen_1; // normalized
+		// fromMouse_1 = fromMouse_1 * (1. - power(tomouselen_1/maxmouse, 3.)); 
+		fromMouse_1 *= 60. + 0.*360.* simplex3d(vec3(pos.xy*0.04, time*0.01));
+		// fromMouse_1 *= 260. + 0.*360.* simplex3d(vec3(pos.xy*0.04, time*0.01));
+		// if(mod(tomouselen_1, 6.) < 6.0/2.){fromMouse_1 *= 0.;}
 	}
-	else{
-		fromMouse = vec2(0.0);
+	else{fromMouse_1 = vec2(0.0);}
+	
+	vec2 possn_2 = pos;
+	possn_2 -= mouse_2;
+	possn_2 = vec2(possn_2.x*cos(angle) - possn_2.y*sin(angle), possn_2.x*sin(angle) + possn_2.y*cos(angle));
+	possn_2.x *= 2.1;
+	possn_2.x += 30.*simplex3d(vec3(pos.xy*0.01+313.42, time*0.01));
+	possn_2.y += 30.*simplex3d(vec3(pos.xy*0.01, time*0.01));
+	possn_2 += mouse_2;
+	vec2 fromMouse_2 = possn_2 - mouse_2;
+	float tomouselen_2 = length(fromMouse_2);
+	if(tomouselen_2 < maxmouse){
+		fromMouse_2 = fromMouse_2 / tomouselen_2; // normalized
+		fromMouse_2 = fromMouse_2 * (1. - tomouselen_2/maxmouse); 
+		fromMouse_2 *= 260. + 360.* simplex3d(vec3(pos.xy*0.04, time*0.01));
+		if(mod(tomouselen_2, 6.) < 6.0/2.){fromMouse_2 *= 0.;}
 	}
+	else{fromMouse_2 = vec2(0.0);}
+	
+	vec2 possn_3 = pos;
+	possn_3 -= mouse_3;
+	possn_3 = vec2(possn_3.x*cos(angle) - possn_3.y*sin(angle), possn_3.x*sin(angle) + possn_3.y*cos(angle));
+	possn_3.x *= 2.1;
+	possn_3.x += 30.*simplex3d(vec3(pos.xy*0.01+313.42, time*0.01));
+	possn_3.y += 30.*simplex3d(vec3(pos.xy*0.01, time*0.01));
+	possn_3 += mouse_3;
+	vec2 fromMouse_3 = possn_3 - mouse_3;
+	float tomouselen_3 = length(fromMouse_3);
+	if(tomouselen_3 < maxmouse){
+		fromMouse_3 = fromMouse_3 / tomouselen_3; // normalized
+		fromMouse_3 = fromMouse_3 * (1. - tomouselen_3/maxmouse); 
+		fromMouse_3 *= 260. + 360.* simplex3d(vec3(pos.xy*0.04, time*0.01));
+		if(mod(tomouselen_3, 6.) < 6.0/2.){fromMouse_3 *= 0.;}
+	}
+	else{fromMouse_3 = vec2(0.0);}
+	
+	vec2 possn_4 = pos;
+	possn_4 -= mouse_4;
+	possn_4 = vec2(possn_4.x*cos(angle) - possn_4.y*sin(angle), possn_4.x*sin(angle) + possn_4.y*cos(angle));
+	possn_4.x *= 2.1;
+	possn_4.x += 30.*simplex3d(vec3(pos.xy*0.01+313.42, time*0.01));
+	possn_4.y += 30.*simplex3d(vec3(pos.xy*0.01, time*0.01));
+	possn_4 += mouse_4;
+	vec2 fromMouse_4 = possn_4 - mouse_4;
+	float tomouselen_4 = length(fromMouse_4);
+	if(tomouselen_4 < maxmouse){
+		fromMouse_4 = fromMouse_4 / tomouselen_4; // normalized
+		fromMouse_4 = fromMouse_4 * (1. - tomouselen_4/maxmouse); 
+		fromMouse_4 *= 260. + 360.* simplex3d(vec3(pos.xy*0.04, time*0.01));
+		if(mod(tomouselen_4, 6.) < 6.0/2.){fromMouse_4 *= 0.;}
+	}
+	else{fromMouse_4 = vec2(0.0);}
+	
+	vec2 possn_5 = pos;
+	possn_5 -= mouse_5;
+	possn_5 = vec2(possn_5.x*cos(angle) - possn_5.y*sin(angle), possn_5.x*sin(angle) + possn_5.y*cos(angle));
+	possn_5.x *= 2.1;
+	possn_5.x += 30.*simplex3d(vec3(pos.xy*0.01+313.42, time*0.01));
+	possn_5.y += 30.*simplex3d(vec3(pos.xy*0.01, time*0.01));
+	possn_5 += mouse_5;
+	vec2 fromMouse_5 = possn_5 - mouse_5;
+	float tomouselen_5 = length(fromMouse_5);
+	if(tomouselen_5 < maxmouse){
+		fromMouse_5 = fromMouse_5 / tomouselen_5; // normalized
+		fromMouse_5 = fromMouse_5 * (1. - tomouselen_5/maxmouse); 
+		fromMouse_5 *= 260. + 360.* simplex3d(vec3(pos.xy*0.04, time*0.01));
+		if(mod(tomouselen_5, 6.) < 6.0/2.){fromMouse_5 *= 0.;}
+	}
+	else{fromMouse_5 = vec2(0.0);}
 
 	ivec2 noise_coord = ivec2(int(pos.x), int(pos.y));
 
-   acc.x = -noisexy.x + fromMouse.x + 0.*u_Gravity.x;
-   acc.y = noisexy.y + fromMouse.y + 0.*u_Gravity.y;
+	vec2 fromMouse = fromMouse_1 + fromMouse_2 + fromMouse_3 + fromMouse_4 + fromMouse_5;
+
+   acc.x = -noisexy.x + fromMouse.x*5. + 0.*u_Gravity.x;
+   acc.y = noisexy.y + fromMouse.y*5. + 0.*u_Gravity.y;
 
    float pp = .97;
-   float brd = 100.;
+   float brd = 0.;
    if(pos.x > resolution.x - brd){
-		// acc += vec2(-35., 0.);
-		pos.x = pos.x - (resolution.x-2.*brd);
+		acc += vec2(-35., 0.);
+		// pos.x = pos.x - (resolution.x-2.*brd);
    }
    if(pos.y > resolution.y - brd){
-		// acc += vec2(0., -35.);
-		pos.y = pos.y - (resolution.y-2.*brd);
+		acc += vec2(0., -35.);
+		// pos.y = pos.y - (resolution.y-2.*brd);
    }
    if(pos.x < brd){
-		// acc += vec2(+35., 0.);
-		pos.x = pos.x + (resolution.x-2.*brd);
+		acc += vec2(+35., 0.);
+		// pos.x = pos.x + (resolution.x-2.*brd);
    }
    if(pos.y < brd){
-		// acc += vec2(0., +35.);
-		pos.y = pos.y + (resolution.y-2.*brd);
+		acc += vec2(0., +35.);
+		// pos.y = pos.y + (resolution.y-2.*brd);
    }
 
    float drag = 0.98 + 0.01 * i_Seed.y;
-   drag = drag  - (.5-abs(texcol-.5))*1.;
+   drag = drag  - (.5-abs(texcol-.5))*2.;
 //    drag = drag  - texcol*.7;
 //    drag = 1. - drag;
 
@@ -212,7 +304,7 @@ void main() {
 
    vec3 col = i_Color;
    if(i_Age < 13.0 || length(vel*speed) < .5 || texcol > 1110.3){
-   	col = tex.rgb;
+   	//col = tex.rgb;
    }
 //    if(i_Seed.y < .99)
 //    	col = vec3(0.);
@@ -228,6 +320,10 @@ void main() {
    if(texcol > 0.1){
 	//   v_Age = 0.0;
    }
+
+   if(length(vel) > 0.1){
+	   v_Age = 0.0;
+   };
 //    float pp = .8;
 //    if(pos.x >= resolution.x*(.5 + pp/2.)){
 // 		//pos.x = pos.x - resolution.x*pp;
@@ -257,159 +353,7 @@ void main() {
 //    col = vec3(0., 0., 0.);
 //    col = vec3(smoothstep(.4,.5,tomouselen/resolution.x));
 
-   v_Position = pos;
-   v_Velocity = vel;
-   v_Seed = i_Seed;
-   v_Color = col;
-}
-
-void main2() {
-	
-   vec2 pos = i_Position;
-   vec2 vel = i_Velocity;
-   vec2 acc = vec2(0., 0.);
-   vec2 seed = i_Seed;
-   vec2 resolution = u_Resolution;
-   vec2 mouse = vec2(u_Origin.x, resolution.y-u_Origin.y);
-   float speed = u_Speed;
-   float time = u_Time;
-
-	ivec2 ipos = ivec2(int(pos.x), int(pos.y));
-	vec2 tc =  pos.xy/resolution.xy;
-	tc.y = 1. - tc.y;
-	float texcol = texture(u_InputImage, tc).r*1.;
-	vec3 tex = texture(u_InputImage, tc).rgb;
-
-	float tttime = time*0.0015 + pos.x/resolution.x;
-	tttime = mod(tttime, 1.0);
-	tttime = pow(tttime, 5.);
-   	tttime = 0.0;
-	float ttime = floor(time) + tttime;
-	vec2 posss = pos.xy/resolution.x;
-	vec3 nzpp = vec3(posss.x, posss.y, ttime*0.02);
-	float incx = clamp(4. + round(power(simplex3d(nzpp+vec3(0.2589, 0.4891, 1.131)), 4.)*34.), 2., 34.);
-	float incy = clamp(4. + round(power(simplex3d(nzpp+vec3(3.2589, 0.4891, 44.131)), 4.)*34.), 2., 34.);
-	vec2 poss = pos.xy/resolution.x;
-   incx = 1. + 7. * power(clamp(simplex3d_fractal(vec3(mod(time*3., 1000.0)*0.001 + pos.y/resolution.y*.06)), -1., 1.)/2.+.5, 4.);
-   incy = 1. + 2. * power(clamp(simplex3d_fractal(vec3(mod(time*3., 1000.0)*0.001 + pos.x/resolution.x*.03 + .41)), -1., 1.)/2.+.5, 4.);
-   float incxx = 1. + 1. * power(clamp(simplex3d_fractal(vec3(mod(time*3., 1000.0)*0.001 + pos.y/resolution.y*.06 + .1251)), -1., 1.)/2.+.5, 4.);
-   float incyy = 1. + 2. * power(clamp(simplex3d_fractal(vec3(mod(time*3., 1000.0)*0.001 + pos.y/resolution.y*.06+ .8888)), -1., 1.)/2.+.5, 4.);
-	poss.x = round(incx*poss.x)/incx + round(incxx)*0.;
-	poss.y = round(incy*poss.y)/incy + round(incyy)*.0;
-	vec3 nzp = vec3(poss.x, poss.y, ttime*0.002)*2.;
-   vec2 noisexy = vec2(0., 0.);
-   float qq = clamp(simplex3d(nzp*0.5+vec3(0.2589, 0.4891, 5.1311)), -1.0, 1.0);
-
-   float r = .6;
-   if(length(pos.xy/resolution.xy-.5) < 0.1){
-      //r *= 4.;
-   }
-
-   float ang = 17.*simplex3d(nzp*0.0527*qq);
-   float ang2 = 47.*simplex3d(nzp*0.0527*qq);
-   //ang = 66.*simplex3d(nzp*.527*qq + time*0.02);
-
-
-   noisexy.x = r*cos(ang)*12.5 + 0.0*r*cos(ang2);
-   noisexy.y = r*sin(ang)*12.5 + 0.0*r*sin(ang2);
-   
-//    noisexy.x += -1. + 2.*seed.x;
-//    noisexy.y += -1. + 2.*seed.y;
-
-	vec2 fromMouse = pos - mouse;
-	float tomouselen = length(fromMouse);
-	if(tomouselen < resolution.x*0.1){
-		fromMouse = fromMouse / tomouselen;
-		fromMouse = fromMouse * (1. - tomouselen/resolution.x*0.1);
-		fromMouse *= 125.;
-	}
-	else{
-		fromMouse = vec2(0.0);
-	}
-
-	ivec2 noise_coord = ivec2(int(pos.x), int(pos.y));
-
-   acc.x = -noisexy.x + fromMouse.x + 0.*u_Gravity.x;
-   acc.y = noisexy.y + fromMouse.y + 0.*u_Gravity.y;
-
-
-   float pp = .97;
-   float brd = 100.;
-   if(pos.x > resolution.x - brd){
-		// acc += vec2(-35., 0.);
-		pos.x = pos.x - (resolution.x-2.*brd);
-   }
-   if(pos.y > resolution.y - brd){
-		// acc += vec2(0., -35.);
-		pos.y = pos.y - (resolution.y-2.*brd);
-   }
-   if(pos.x < brd){
-		// acc += vec2(+35., 0.);
-		pos.x = pos.x + (resolution.x-2.*brd);
-   }
-   if(pos.y < brd){
-		// acc += vec2(0., +35.);
-		pos.y = pos.y + (resolution.y-2.*brd);
-   }
-
-
-
-   float drag = 0.98 + 0.01 * i_Seed.y;
-   drag = drag  - (.5-abs(texcol-.5))*1.;
-//    drag = drag  - texcol*.7;
-//    drag = 1. - drag;
-
-
-   //vel = vel + acc*1.05;
-   vel = vel + .0*vec2(1.,1.)+acc*.991;
-   vel = vel * drag;
-
-   vec3 col = i_Color;
-   if(i_Age < 13.0){
-   	col = tex.rgb;
-   }
-//    if(i_Seed.y < .99)
-//    	col = vec3(0.);
-//    if(mod(i_Age, 10.0) < .99){
-//    	col = tex.rgb;
-//    }
-   
-   pos = pos + vel*speed;
-   
-   //age += u_TimeDelta;
-
-   v_Age = i_Age + 1.0;
-   if(texcol > 0.1){
-	//   v_Age = 0.0;
-   }
-//    float pp = .8;
-//    if(pos.x >= resolution.x*(.5 + pp/2.)){
-// 		//pos.x = pos.x - resolution.x*pp;
-// 		vel.x = -vel.x;
-// 		pos += vel*2.*speed;
-// 		// v_Age = 11110.0;
-//    }
-//    if(pos.y > resolution.y*(.5 + pp/2.)){
-// 		//pos.y = pos.y - resolution.y*pp;
-// 		vel.y = -vel.y;
-// 		pos += vel*2.*speed;
-// 		// v_Age = 11110.0;
-//    }
-//    if(pos.x < resolution.x*(.5 - pp/2.)){
-// 		//pos.x = pos.x + resolution.x*pp;
-// 		vel.x = -vel.x;
-// 		pos += vel*2.*speed;
-// 		// v_Age = 11110.0;
-//    }
-//    if(pos.y < resolution.y*(.5 - pp/2.)){
-// 		//pos.y = pos.y + resolution.y*pp;
-// 		vel.y = -vel.y;
-// 		pos += vel*2.*speed;
-// 		// v_Age = 11110.0;
-//    }
-
-//    col = vec3(0., 0., 0.);
-//    col = vec3(smoothstep(.4,.5,tomouselen/resolution.x));
+ 
 
    v_Position = pos;
    v_Velocity = vel;

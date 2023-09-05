@@ -8,6 +8,7 @@ in vec2 i_Position;
 in float i_Age;
 in vec2 i_Seed;
 in vec3 i_Color;
+in vec2 i_Velocity;
 uniform sampler2D u_InputImage;
 
 out float v_Age;
@@ -34,12 +35,21 @@ void main() {
   //gl_PointSize = 3.*texcol;
 
   gl_PointSize = 4. - 3.*v_Age/344.;
-  gl_PointSize = (2. + 4.*i_Seed.y) + 4.*smoothstep(.9985, .9999999, i_Seed.x);
+  gl_PointSize = (2. + 8.*pow(i_Seed.y, 4.)) + 4.*smoothstep(.9985, .9999999, i_Seed.x);
   gl_PointSize *= 1.02;
+  gl_PointSize *= .7;
   v_Color = v_Color * (1. - .6*smoothstep(.9985, .9999999, i_Seed.x));
-  // if(i_Age < 10.){
-  //   gl_PointSize = 250.;
-  // }
+
+  // float lele = length(i_Velocity)/40.;
+  // lele = clamp(lele, 0.1, 1.1)-.1;
+  // gl_PointSize *= lele;
+
+  if(i_Age > 20.){
+    gl_PointSize *= 1.-(i_Age-20.)/20.;
+  }
+  if(i_Age > 40.){
+    gl_PointSize *= 0.;
+  }
   //gl_PointSize = 50. - 49.*smoothstep(30.0, 31.0, v_Age);
   gl_Position = vec4(pos, 0.0, 1.0);
 }

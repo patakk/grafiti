@@ -1,5 +1,5 @@
 var particles_info = {
-    count: 4100000,
+    count: 3000000,
     speed: .05,
     input: "hello",
     colors: true,
@@ -18,7 +18,7 @@ var input_image;
 var gr;
 var input_image_tex;
 
-var resx = 3000;
+var resx = 2000;
 var resy = Math.floor(resx/Math.sqrt(2));
 var colors_current = 1.0*particles_info.colors;
 var colors_target = colors_current;
@@ -99,8 +99,9 @@ let textGen = function(p) {
       //p.ellipse(p.mouseX, p.mouseY, 14, 14);
   };
   p.reset = function(txtinput){
-    let pal = palettes[Math.floor(fxrand()*30)];
-   pal = palettes[30];
+    let pidx = Math.floor(fxrand()*30);
+    let pal = palettes[pidx];
+  //  pal = palettes[30];
     txtinput = txtinput.toUpperCase();
     let bg = pal[Math.floor(fxrand()*pal.length)];
     p.background(bg[0]*33,bg[1]*33,bg[2]*33);
@@ -123,11 +124,11 @@ let textGen = function(p) {
       //p.rotateX(p.random(100));
       //p.rotateY(p.random(100));
       p.rotate(p.random(-1.9,1.9)*1+p.radians(33 + 90*k));
-      //p.rect(0, 0, p.random(122, 333), p.random(5, 89));
+      p.rect(0, 0, p.random(122, 333), p.random(5, 89));
       // p.ellipse(0, 0, 6, 233);
       let ro = fxrand();
       //  p.ellipse(0, 0, 10+100*ro, 10+100*ro);
-      p.ellipse(0, 0, 4, 4);
+      //p.ellipse(0, 0, 4, 4);
 
       // if(k < 100)
       //   p.ellipse(0, 0, 200, 200);
@@ -279,23 +280,22 @@ function ssorted(array){
 }
 
 function initialParticleData(num_parts) {
-  
-
-
   var data = [];
 
-  let palette = palettes[3];
+  let pidx = Math.floor(fxrand()*palettes.length);
+  console.log(pidx);
+  let palette = palettes[pidx];
   for (var i = 0; i < num_parts; ++i) {
 
 
     // pos
-    let x = map(fxrand(), 0, 1, .03, -.03+1)*resx;
-    let y = map(fxrand(), 0, 1, .03, -.03+1)*resy;
+    let x = map(fxrand(), 0, 1, .108, -.108+1)*resx;
+    let y = map(fxrand(), 0, 1, .108, -.108+1)*resy;
     data.push(x);
     data.push(y);
 
     // age
-    data.push(0);
+    data.push(110);
 
     // seed
     // // opacity
@@ -304,11 +304,14 @@ function initialParticleData(num_parts) {
     data.push(fxrand());
     
     // color
-    let colorIndex = power(noise(x*0.001, y*0.01), 3) * palette.length + -2+fxrand()*4;
+    let colorIndex = power(noise(x*0.001, y*0.001), 3) * palette.length + 1*(-2+fxrand()*4);
     let col = palette[Math.floor(colorIndex+palette.length)%palette.length];
-    data.push(0*col[0]+0*.1*(-.5+fxrand()));
-    data.push(0*col[1]+0*.1*(-.5+fxrand()));
-    data.push(0*col[2]+0*.1*(-.5+fxrand()));
+    // data.push(col[0]+.1*(-.5+fxrand()));
+    // data.push(col[1]+.1*(-.5+fxrand()));
+    // data.push(col[2]+.1*(-.5+fxrand()));
+    data.push(.0);
+    data.push(.0);
+    data.push(.0);
 
     // vel
     data.push(0.0);
@@ -417,6 +420,11 @@ function init(
       location: gl.getAttribLocation(render_program, "i_Color"),
       num_components: 3,
       type: gl.FLOAT
+    },
+    i_Velocity: {
+      location: gl.getAttribLocation(update_program, "i_Velocity"),
+      num_components: 2,
+      type: gl.FLOAT
     }
   };
   var vaos = [
@@ -507,6 +515,7 @@ var vao_desc = [
     total_time: 0.0,
     born_particles: initial_data.length / 10,
     origin: [-1000.0, -1000.0],
+    origins: [[-1000.0, -1000.0], [-1000.0, -1000.0], [-1000.0, -1000.0], [-1000.0, -1000.0], [-1000.0, -1000.0]],
     input_image: input_image_tex,
     particle_opacity: particle_opacity,
   };
@@ -550,9 +559,31 @@ function render(gl, state, timestamp_millis) {
     gl.getUniformLocation(state.particle_update_program, "u_TotalTime"),
     state.total_time);
   gl.uniform2f(
-    gl.getUniformLocation(state.particle_update_program, "u_Origin"),
-    state.origin[0],
-    state.origin[1]);
+    gl.getUniformLocation(state.particle_update_program, "u_Origin1"),
+    state.origins[0][0],
+    state.origins[0][1]);
+  gl.uniform2f(
+    gl.getUniformLocation(state.particle_update_program, "u_Origin2"),
+    state.origins[1][0],
+    state.origins[1][1]);
+  gl.uniform2f(
+    gl.getUniformLocation(state.particle_update_program, "u_Origin3"),
+    state.origins[2][0],
+    state.origins[2][1]);
+  gl.uniform2f(
+    gl.getUniformLocation(state.particle_update_program, "u_Origin4"),
+    state.origins[3][0],
+    state.origins[3][1]);
+  gl.uniform2f(
+    gl.getUniformLocation(state.particle_update_program, "u_Origin5"),
+    state.origins[4][0],
+    state.origins[4][1]);
+  gl.uniform1f(
+    gl.getUniformLocation(state.particle_update_program, "u_Angle"),
+    movementangle);
+  gl.uniform1f(
+    gl.getUniformLocation(state.particle_update_program, "u_RepelForce"),
+    movementspeed);
   var aang = fxrandom(-3.1415, 3.1415)*114;
   var ddr = fxrandom(15, 15)*4;
   var ddx = ddr*Math.cos(aang);
@@ -628,7 +659,6 @@ function render(gl, state, timestamp_millis) {
   if(realFrameCount < maxframes){
     window.requestAnimationFrame(function(ts) { render(gl, state, ts); });
     if((realFrameCount+1)%1 == 0){
-      console.log("hello")
       gl.drawArrays(gl.POINTS, 0, num_part);
     }
   }
@@ -645,6 +675,12 @@ function render(gl, state, timestamp_millis) {
 
 
   colors_current = colors_current + (colors_target - colors_current)*.12;
+  
+  thestate.origins[0] = [-1000, -1000];
+  thestate.origins[1] = [-1000, -1000];
+  thestate.origins[2] = [-1000, -1000];
+  thestate.origins[3] = [-1000, -1000];
+  thestate.origins[4] = [-1000, -1000];
 }
 
 
@@ -717,6 +753,7 @@ document.addEventListener('click', function(event) {
 
 let bbrd = 200;
 
+
 function repositionCanvas(canvas){
     var win = window,
     doc = document,
@@ -760,6 +797,15 @@ function repositionCanvas(canvas){
     
 }
 
+let pmouseX = -1000;
+let pmouseY = -1000;
+let movementangle = 0;
+let movementspeed = 0;
+
+function constrain(v, min, max){
+  return Math.min(Math.max(v, min), max);
+}
+
 function resetState(){
   
   //time0 = performance.now();
@@ -768,21 +814,40 @@ function resetState(){
     var y = e.pageY - canvas.offsetTop;
     x = x / parseInt(canvas.style.width) * resx;
     y = y / parseInt(canvas.style.height) * resy;
-    if(!isMobile()) thestate.origin = [x, y];
-    
+
+    // check distance
+    let d = Math.sqrt((x-pmouseX)*(x-pmouseX) + (y-pmouseY)*(y-pmouseY));
+    if(mousepressed && x > 0 && y > 0 && pmouseX > 0 && pmouseY > 0){
+      movementspeed = map(constrain(d, 0, 100), 0, 100, 1, 3);
+      movementangle = Math.atan2(y-pmouseY, x-pmouseX);
+      console.log(d, movementspeed, x, y, pmouseX, pmouseY)
+    }
+    if(d > 5){
+      pmouseX = thestate.origins[0][0];
+      pmouseY = thestate.origins[0][1];
+    }
+
+    if(!isMobile() && mousepressed) thestate.origins[0] = [x, y];
+
   };
   
   canvas.ontouchmove = function(e) {
     var evt = (typeof e.originalEvent === 'undefined') ? e : e.originalEvent;
-    var touch = evt.touches[0] || evt.changedTouches[0];
-    var x = touch.pageX - this.offsetLeft;
-    var y = touch.pageY - this.offsetTop;
-    thestate.origin = [x, y];
+    for(var i = 0; i < evt.touches.length; i++){
+      var touch = evt.touches[i] || evt.changedTouches[i];
+      var x = touch.pageX - this.offsetLeft;
+      var y = touch.pageY - this.offsetTop;
+      x = x / parseInt(canvas.style.width) * resx;
+      y = y / parseInt(canvas.style.height) * resy;
+      // document.getElementById("info").innerHTML = evt.touches.length;
+      thestate.origins[i] = [x, y];
+    }
   };
   
   canvas.ontouchend = function(e) {
-    if(isMobile()){
-      thestate.origin = [-1000, -1000];
+    var evt = (typeof e.originalEvent === 'undefined') ? e : e.originalEvent;
+    for(var i = 0; i < evt.touches.length; i++){
+      thestate.origins[i] = [-1000, -1000];
     }
   };
   
@@ -849,18 +914,18 @@ function main() {
     canvas.height = 100;
     repositionCanvas(canvas);
     
-    window.addEventListener('mousedown', function() {
-      notholding = false;
-    });
-    window.addEventListener('mouseup', function() {
-      notholding = true;
-    });
-    window.addEventListener('touchstart', function() {
-      notholding = false;
-    });
-    window.addEventListener('touchend', function() {
-      notholding = true;
-    });
+    // canvas.addEventListener('mousedown', function() {
+    //   notholding = false;
+    // });
+    // canvas.addEventListener('mouseup', function() {
+    //   notholding = true;
+    // });
+    // canvas.addEventListener('touchstart', function() {
+    //   notholding = false;
+    // });
+    // canvas.addEventListener('touchend', function() {
+    //   notholding = true;
+    // });
     
     webgl_context = canvas.getContext("webgl2", {preserveDrawingBuffer: true});
     if (webgl_context != null) {
@@ -899,12 +964,12 @@ function handleZoom(event){
 
 let mousepressed = false;
 document.addEventListener('mousedown', function(event) {
-    handleZoom(event);
+    // handleZoom(event);
     mousepressed = true;
 });
 document.addEventListener("mousemove", function(event) {
-    if(mousepressed)
-        handleZoom(event);
+    // if(mousepressed)
+    //     handleZoom(event);
 });
 document.addEventListener('mouseup', function(event) {
     reportWindowSize();
