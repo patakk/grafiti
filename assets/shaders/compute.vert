@@ -175,26 +175,29 @@ void main() {
    noisexy.x += 0.0*(-1. + 2.*random3(vec3(seed.x)).x);
    noisexy.y += 0.0*(-1. + 2.*random3(vec3(seed.y)).y);
 
-	float maxmouse = resolution.x*0.0615*.33*u_RepelForce*3.;
+	float maxmouse = resolution.x*u_RepelForce*0.03*.5;
+	maxmouse = resolution.x*0.03*1.2;
 	
 	vec2 possn_1 = pos;
 	float angle = simplex3d(vec3(mouse_1.xy*0.0000+13.42, time*0.0018))*3.1415926535897932384626433832795*2.0;
 	angle = u_Angle;
 	possn_1 -= mouse_1;
 	possn_1 = vec2(possn_1.x*cos(angle) - possn_1.y*sin(angle), possn_1.x*sin(angle) + possn_1.y*cos(angle));
-	// possn_1.y *= 2.1;
-	// possn_1.x += 30.*simplex3d(vec3(pos.xy*0.01+313.42, time*0.01));
-	// possn_1.y += 30.*simplex3d(vec3(pos.xy*0.01, time*0.01));
+	possn_1.y *= 2.1;
+	possn_1.x += 30.*simplex3d(vec3(pos.xy*0.01+313.42, time*0.01));
+	possn_1.y += 30.*simplex3d(vec3(pos.xy*0.01, time*0.01));
 	possn_1 += mouse_1;
 	vec2 fromMouse_1 = pos - mouse_1;
 	vec2 fromMouse_11 = possn_1 - mouse_1;
 	float tomouselen_1 = length(fromMouse_1);
-	if(abs(fromMouse_11.x)*2. < maxmouse && abs(fromMouse_11.y)*2. < maxmouse){
+	float tomouselen_11 = length(fromMouse_11);
+	// if(abs(fromMouse_11.x)*2. < maxmouse && abs(fromMouse_11.y)*2. < maxmouse){
+	if(tomouselen_11 < maxmouse){
 		fromMouse_1 = fromMouse_1 / tomouselen_1; // normalized
 		// fromMouse_1 = fromMouse_1 * (1. - power(tomouselen_1/maxmouse, 3.)); 
 		fromMouse_1 *= 60. + 0.*360.* simplex3d(vec3(pos.xy*0.04, time*0.01));
 		// fromMouse_1 *= 260. + 0.*360.* simplex3d(vec3(pos.xy*0.04, time*0.01));
-		// if(mod(tomouselen_1, 6.) < 6.0/2.){fromMouse_1 *= 0.;}
+		 if(mod(tomouselen_11, 4.) < .6){fromMouse_1 *= 0.;}
 	}
 	else{fromMouse_1 = vec2(0.0);}
 	
@@ -209,8 +212,8 @@ void main() {
 	float tomouselen_2 = length(fromMouse_2);
 	if(tomouselen_2 < maxmouse){
 		fromMouse_2 = fromMouse_2 / tomouselen_2; // normalized
-		fromMouse_2 = fromMouse_2 * (1. - tomouselen_2/maxmouse); 
-		fromMouse_2 *= 260. + 360.* simplex3d(vec3(pos.xy*0.04, time*0.01));
+		// fromMouse_2 = fromMouse_2 * (1. - tomouselen_2/maxmouse); 
+		fromMouse_2 *=  60. + 0.*360.* simplex3d(vec3(pos.xy*0.04, time*0.01));
 		if(mod(tomouselen_2, 6.) < 6.0/2.){fromMouse_2 *= 0.;}
 	}
 	else{fromMouse_2 = vec2(0.0);}
@@ -226,8 +229,8 @@ void main() {
 	float tomouselen_3 = length(fromMouse_3);
 	if(tomouselen_3 < maxmouse){
 		fromMouse_3 = fromMouse_3 / tomouselen_3; // normalized
-		fromMouse_3 = fromMouse_3 * (1. - tomouselen_3/maxmouse); 
-		fromMouse_3 *= 260. + 360.* simplex3d(vec3(pos.xy*0.04, time*0.01));
+		// fromMouse_3 = fromMouse_3 * (1. - tomouselen_3/maxmouse); 
+		fromMouse_3 *=  60. + 0.*360.* simplex3d(vec3(pos.xy*0.04, time*0.01));
 		if(mod(tomouselen_3, 6.) < 6.0/2.){fromMouse_3 *= 0.;}
 	}
 	else{fromMouse_3 = vec2(0.0);}
@@ -243,8 +246,8 @@ void main() {
 	float tomouselen_4 = length(fromMouse_4);
 	if(tomouselen_4 < maxmouse){
 		fromMouse_4 = fromMouse_4 / tomouselen_4; // normalized
-		fromMouse_4 = fromMouse_4 * (1. - tomouselen_4/maxmouse); 
-		fromMouse_4 *= 260. + 360.* simplex3d(vec3(pos.xy*0.04, time*0.01));
+		// fromMouse_4 = fromMouse_4 * (1. - tomouselen_4/maxmouse); 
+		fromMouse_4 *=  60. + 0.*360.* simplex3d(vec3(pos.xy*0.04, time*0.01));
 		if(mod(tomouselen_4, 6.) < 6.0/2.){fromMouse_4 *= 0.;}
 	}
 	else{fromMouse_4 = vec2(0.0);}
@@ -260,9 +263,9 @@ void main() {
 	float tomouselen_5 = length(fromMouse_5);
 	if(tomouselen_5 < maxmouse){
 		fromMouse_5 = fromMouse_5 / tomouselen_5; // normalized
-		fromMouse_5 = fromMouse_5 * (1. - tomouselen_5/maxmouse); 
-		fromMouse_5 *= 260. + 360.* simplex3d(vec3(pos.xy*0.04, time*0.01));
-		if(mod(tomouselen_5, 6.) < 6.0/2.){fromMouse_5 *= 0.;}
+		// fromMouse_5 = fromMouse_5 * (1. - tomouselen_5/maxmouse); 
+		fromMouse_5 *=  60. + 0.*360.* simplex3d(vec3(pos.xy*0.04, time*0.01));
+		if(mod(tomouselen_5, 6.) < 6.-1.){fromMouse_5 *= 0.;}
 	}
 	else{fromMouse_5 = vec2(0.0);}
 
@@ -270,8 +273,8 @@ void main() {
 
 	vec2 fromMouse = fromMouse_1 + fromMouse_2 + fromMouse_3 + fromMouse_4 + fromMouse_5;
 
-   acc.x = -noisexy.x + fromMouse.x*5. + 0.*u_Gravity.x;
-   acc.y = noisexy.y + fromMouse.y*5. + 0.*u_Gravity.y;
+   acc.x = -noisexy.x + fromMouse.x*9. + 0.*u_Gravity.x;
+   acc.y = noisexy.y + fromMouse.y*9. + 0.*u_Gravity.y;
 
    float pp = .97;
    float brd = 0.;
@@ -292,8 +295,9 @@ void main() {
 		// pos.y = pos.y + (resolution.y-2.*brd);
    }
 
-   float drag = 0.98 + 0.01 * i_Seed.y;
-   drag = drag  - (.5-abs(texcol-.5))*2.;
+   float drag = 0.4 + 0.425 * i_Seed.y;
+//    drag = 0.5 + .4 * i_Seed.y;
+   drag = drag  - (.5-abs(texcol-.5))*1.05;
 //    drag = drag  - texcol*.7;
 //    drag = 1. - drag;
 

@@ -3,6 +3,7 @@ precision highp float;
 
 uniform vec2 u_Resolution;
 uniform float u_Opacity;
+uniform float u_Scale;
 
 in vec2 i_Position;
 in float i_Age;
@@ -37,19 +38,21 @@ void main() {
   gl_PointSize = 4. - 3.*v_Age/344.;
   gl_PointSize = (2. + 8.*pow(i_Seed.y, 4.)) + 4.*smoothstep(.9985, .9999999, i_Seed.x);
   gl_PointSize *= 1.02;
-  gl_PointSize *= .7;
+  gl_PointSize *= .7 * u_Scale * (1.+length(i_Velocity)/3500.);
+  // gl_PointSize *= 1.25;
   v_Color = v_Color * (1. - .6*smoothstep(.9985, .9999999, i_Seed.x));
 
   // float lele = length(i_Velocity)/40.;
   // lele = clamp(lele, 0.1, 1.1)-.1;
   // gl_PointSize *= lele;
 
-  if(i_Age > 20.){
-    gl_PointSize *= 1.-(i_Age-20.)/20.;
-  }
-  if(i_Age > 40.){
-    gl_PointSize *= 0.;
-  }
+  // if(i_Age > 20.){
+  //   gl_PointSize *= 1.-(i_Age-20.)/20.;
+  // }
+  // if(i_Age > 40.){
+  //   gl_PointSize *= 0.;
+  // }
+
   //gl_PointSize = 50. - 49.*smoothstep(30.0, 31.0, v_Age);
   gl_Position = vec4(pos, 0.0, 1.0);
 }
